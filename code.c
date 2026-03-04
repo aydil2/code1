@@ -1,34 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>   // library input output (printf, scanf, fopen)
+#include <stdlib.h>  // library system("cls")
 
 // ===== STRUCT =====
+
+// Struct untuk menyimpan data siswa (gabungan beberapa tipe data)
 typedef struct {
-    char nama[30];
-    int nis;
-    char kelas[20];
-    char sekolah[30];
+    char nama[30];    // menyimpan nama siswa (string)
+    int nis;          // menyimpan NIS (integer)
+    char kelas[20];   // menyimpan kelas
+    char sekolah[30]; // menyimpan nama sekolah
 } Siswa;
 
+// Struct untuk menyimpan data nilai per mata pelajaran
 typedef struct {
-    char nama[30];
-    int kkm;
-    int nilai;
+    char nama[30];  // nama mata pelajaran
+    int kkm;        // nilai KKM
+    int nilai;      // nilai siswa
 } datanilai;
 
+
 // ===== FUNCTION DECLARATION =====
-void tampilMapel(datanilai mapel[]);
-void inputSiswa(Siswa *s);
+// Declaration agar fungsi bisa dipanggil sebelum didefinisikan
+
+void tampilMapel(datanilai mapel[]); // procedure (tidak return nilai)
+void inputSiswa(Siswa *s);           // procedure pakai pointer
 void inputNilai(datanilai mapel[]);
-float hitungRata(datanilai mapel[]);
-char predikat(float rata);
+float hitungRata(datanilai mapel[]); // function return float
+char predikat(float rata);           // function return char
 void cetakFile(Siswa s, datanilai mapel[], float rata, char huruf);
 
+
 // ===== MAIN =====
+// Program mulai dari sini
 int main() {
 
-    Siswa siswa;
-    char ulang;
+    Siswa siswa;   // membuat variabel siswa dari struct Siswa
+    char ulang;    // untuk menyimpan pilihan Y/N
 
+    // Array struct karena jumlah mapel sudah diketahui (5)
     datanilai mapel[5] = {
         {"Pemrograman Web",76,0},
         {"Pemrograman Mobile",76,0},
@@ -37,17 +46,18 @@ int main() {
         {"Kewirausahaan",79,0}
     };
 
-    tampilMapel(mapel);
-    inputSiswa(&siswa);
+    tampilMapel(mapel);      // menampilkan daftar mapel
+    inputSiswa(&siswa);      // input data siswa (pakai pointer supaya data asli berubah)
 
+    // do-while agar program minimal berjalan 1 kali
     do {
 
-        inputNilai(mapel);
+        inputNilai(mapel);   // input nilai semua mapel
 
-        float rata = hitungRata(mapel);
-        char huruf = predikat(rata);
+        float rata = hitungRata(mapel); // hitung rata-rata (function return float)
+        char huruf = predikat(rata);    // menentukan predikat (function return char)
 
-        system("cls");
+        system("cls");  // membersihkan layar
 
         printf("\n====================================================\n");
         printf("              RAPOR SMK NEGERI 1 DENPASAR\n");
@@ -62,6 +72,7 @@ int main() {
         printf("No  Nama Mapel           KKM  Nilai  Status\n");
         printf("----------------------------------------------------\n");
 
+        // for loop karena jumlah mapel sudah pasti 5
         for(int i=0;i<5;i++){
             printf("%-3d %-20s %-4d %-6d ",
                    i+1,
@@ -69,6 +80,7 @@ int main() {
                    mapel[i].kkm,
                    mapel[i].nilai);
 
+            // percabangan untuk menentukan lulus atau tidak
             if(mapel[i].nilai >= mapel[i].kkm)
                 printf("LULUS\n");
             else
@@ -76,11 +88,11 @@ int main() {
         }
 
         printf("----------------------------------------------------\n");
-        printf("Rata-rata Nilai : %.2f\n", rata);
+        printf("Rata-rata Nilai : %.2f\n", rata); // %.2f untuk 2 angka desimal
         printf("Predikat        : %c\n", huruf);
         printf("====================================================\n");
 
-        // ===== KONFIRMASI =====
+        // validasi input Y/N menggunakan do-while
         do{
             printf("\nApakah data sudah benar?\n");
             printf("Tekan Y untuk cetak rapor\n");
@@ -89,21 +101,23 @@ int main() {
             scanf(" %c", &ulang);
 
             if(ulang!='Y' && ulang!='y' && ulang!='N' && ulang!='n'){
-                printf("Input salah! Harus Y atau N.\n");
+                printf("Input salah! Harus Y atau N.\n"); // validasi agar hanya Y/N
             }
 
         }while(ulang!='Y' && ulang!='y' && ulang!='N' && ulang!='n');
 
+        // jika user pilih Y maka simpan ke file
         if(ulang=='Y' || ulang=='y'){
-            cetakFile(siswa, mapel, rata, huruf);
+            cetakFile(siswa, mapel, rata, huruf); // memanggil procedure cetak file
             printf("\nRapor berhasil disimpan!\n");
         }
 
-    }while(ulang!='Y' && ulang!='y');
+    }while(ulang!='Y' && ulang!='y'); // ulang jika belum pilih Y
 
     printf("\nProgram selesai. Terima kasih!\n");
-    return 0;
+    return 0; // mengakhiri program
 }
+
 
 // ===== TAMPIL MAPEL =====
 void tampilMapel(datanilai mapel[]){
@@ -113,6 +127,7 @@ void tampilMapel(datanilai mapel[]){
     printf("No  Mata Pelajaran         KKM\n");
     printf("----------------------------------------------------\n");
 
+    // for loop karena jumlah mapel sudah diketahui (5)
     for(int i=0;i<5;i++){
         printf("%-3d %-20s %-3d\n",
                i+1, mapel[i].nama, mapel[i].kkm);
@@ -121,18 +136,21 @@ void tampilMapel(datanilai mapel[]){
     printf("====================================================\n");
 }
 
+
 // ===== INPUT SISWA =====
-void inputSiswa(Siswa *s){
-    int cek;
+void inputSiswa(Siswa *s){  // pointer supaya perubahan langsung ke variabel asli
+
+    int cek;  // variabel untuk validasi
 
     printf("\n=== INPUT IDENTITAS SISWA ===\n");
 
+    // validasi nama tidak boleh ada angka
     do{
         printf("Nama Siswa : ");
         scanf(" %[^\n]", s->nama);
 
         cek = 0;
-        for(int i=0; s->nama[i]; i++){
+        for(int i=0; s->nama[i]; i++){ // cek tiap karakter
             if(s->nama[i] >= '0' && s->nama[i] <= '9'){
                 cek = 1;
                 break;
@@ -144,6 +162,7 @@ void inputSiswa(Siswa *s){
 
     }while(cek);
 
+    // validasi NIS harus angka
     do{
         printf("NIS        : ");
         if(scanf("%d", &s->nis) != 1){
@@ -160,12 +179,16 @@ void inputSiswa(Siswa *s){
     scanf(" %[^\n]", s->sekolah);
 }
 
+
 // ===== INPUT NILAI =====
 void inputNilai(datanilai mapel[]){
 
     printf("\n=== INPUT NILAI MATA PELAJARAN ===\n");
 
+    // for loop karena jumlah mapel 5
     for(int i=0;i<5;i++){
+
+        // while(1) untuk validasi sampai input benar
         while(1){
             printf("Nilai %s : ", mapel[i].nama);
 
@@ -177,56 +200,54 @@ void inputNilai(datanilai mapel[]){
                 printf("Nilai harus antara 0 - 100!\n");
             }
             else{
-                break;
+                break; // keluar jika valid
             }
         }
     }
 }
 
+
 // ===== HITUNG RATA =====
 float hitungRata(datanilai mapel[]){
+
     int total = 0;
+
+    // for loop untuk menjumlahkan semua nilai
     for(int i=0;i<5;i++){
         total += mapel[i].nilai;
     }
-    return total / 5.0;
+
+    return total / 5.0; // dibagi 5.0 agar hasil float
 }
+
 
 // ===== PREDIKAT =====
 char predikat(float rata){
+
     if(rata >= 86) return 'A';
     else if(rata >= 80) return 'B';
     else if(rata >= 76) return 'C';
     else return 'D';
 }
 
+
 // ===== CETAK FILE =====
 void cetakFile(Siswa s, datanilai mapel[], float rata, char huruf){
 
     char filename[30];
-    sprintf(filename,"rapor%d.txt", s.nis);
 
-    FILE *fp = fopen(filename,"w");
+    sprintf(filename,"rapor%d.txt", s.nis); // membuat nama file berdasarkan NIS
+
+    FILE *fp = fopen(filename,"w"); // membuka file mode write
 
     if(fp == NULL){
         printf("File gagal dibuat!\n");
         return;
     }
 
-    fprintf(fp,"====================================================\n");
-    fprintf(fp,"              RAPOR SMK NEGERI 1 DENPASAR\n");
-    fprintf(fp,"====================================================\n");
-
-    fprintf(fp,"Nama Siswa : %s\n", s.nama);
-    fprintf(fp,"NIS        : %d\n", s.nis);
-    fprintf(fp,"Kelas      : %s\n", s.kelas);
-    fprintf(fp,"Sekolah    : %s\n", s.sekolah);
-
-    fprintf(fp,"----------------------------------------------------\n");
-    fprintf(fp,"No  Nama Mapel           KKM  Nilai  Status\n");
-    fprintf(fp,"----------------------------------------------------\n");
-
+    // for loop untuk menulis semua mapel ke file
     for(int i=0;i<5;i++){
+
         fprintf(fp,"%-3d %-20s %-4d %-6d ",
                 i+1,
                 mapel[i].nama,
@@ -239,10 +260,8 @@ void cetakFile(Siswa s, datanilai mapel[], float rata, char huruf){
             fprintf(fp,"TIDAK LULUS\n");
     }
 
-    fprintf(fp,"----------------------------------------------------\n");
     fprintf(fp,"Rata-rata Nilai : %.2f\n", rata);
     fprintf(fp,"Predikat        : %c\n", huruf);
-    fprintf(fp,"====================================================\n");
 
-    fclose(fp);
+    fclose(fp); // menutup file
 }
